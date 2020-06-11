@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dance of the Planets</title>
+  <script src="webmidi.min.js"></script>
+  <script src="p5.min.js"></script>
+  <script src="p5.sound.min.js"></script>
+  <script src="sketch.js"></script>
+  
+  <link rel="stylesheet" href="style.css">
+
+  <meta property="og:description" content="a solar system sonification by Desert Magic and Luke Williams">
+  <meta property="og:image" content="">
+</head>
+
+<body>
+  <div class="container">
+    <!-- <div class="controls">
+      <h1>dance of the planets</h1>
+    </div> -->
+    <div class='game' id='game'></div>
+    
+    <div class='controls'>
+      <h1>dance of the planets</h1>
+      <!-- <p>~ ~ ~</p> -->
+      <br>
+      <div class="controlsToggle" onclick="controlsToggle()"><a id="controlsToggle">+ controls</a></div>
+      <div id="controlsInner" class="controlsInner">
+        <p class="sliderP" id="volumeP">vol</p>
+          <input type="range" min="0" max="100" value="50" class="slider" id="volumeSlider" oninput="volumeSliderChange()">
+
+        <p class="sliderP" id="bpmP">speed</p>
+          <input type="range" min="120" max="1600" value="1360" class="slider" id="bpmSlider" oninput="bpmSliderChange()">
+        
+        <p class="sliderP" id="transposeP">transpose</p>
+          <input type="range" min="0" max="24" value="12" class="slider" id="transposeSlider" onmouseover="transposeKeyShow()" onmouseout="transposeKeyHide()" oninput="transposeSliderChange(), transposeKeyShow()">
+          
+        <!-- <p>[ <a class="randomize" onclick="randomizer(0.5)">randomize</a> ]</p> -->
+        <button type="button" onclick="randomizer(0.5)">randomize</button>
+        
+        
+        <p>interval</p>
+          <select onchange="intervalSelector(this)" id="intervalSelect">
+            <option value="6" >octaves</option>
+            <option value="5" >sevenths</option>
+            <option value="4" >sixths</option>
+            <option value="3" selected>fifths</option>
+            <option value="2">fourths</option>
+            <option value="1">thirds</option>
+            <option value="0">seconds</option>
+          </select>
+        
+        <p>oscillator type</p>
+          <select onchange="oscSelector(this)" id="osc">
+            <option value="sine" selected>sin</option>
+            <option value="triangle">tri</option>
+            <option value="sawtooth">saw</option>
+            <option value="square">square</option>
+            <option value="noise">noise</option>
+          </select>
+          
+        <p class="sliderP">attack / release</p>
+          <input type="range" min="0" max="100" value="6" class="slider halfsize" id="attackSlider" oninput="attackSliderChange()">
+        
+        <!-- <p class="sliderP">release</p> -->
+          <input type="range" min="0" max="100" value="20" class="slider halfsize" id="releaseSlider" oninput="releaseSliderChange()">
+        
+        <p class="sliderP">filter / res</p>
+          <input type="range" min="0" max="100" value="100" class="slider halfsize" id="filterSlider" oninput="filterSliderChange()">
+          
+          <input type="range" min="0" max="100" value="20" class="slider halfsize" id="resSlider" oninput="filterSliderChange()">
+        
+        <p class="sliderP">delay</p>
+          <input type="range" min="0" max="100" value="0" class="slider" id="dlySlider" oninput="dlySliderChange()">
+          
+        <p class="sliderP">time / feedback</p>
+          <input type="range" min="0" max="100" value="50" class="slider halfsize" id="dlyTimeSlider" oninput="dlySliderChange()">
+          
+          <input type="range" min="0" max="100" value="50" class="slider halfsize" id="dlyFeedbackSlider" oninput="dlySliderChange()">
+      </div>
+
+      <p>~ ~ ~</p>
+
+      <div class="midiToggle" onclick="midiToggle()"><a id="midiToggle">+ midi</a></div>
+      <div class="midiOptions" id="midiOptions"></div>
+
+      <p>~ ~ ~</p>
+      
+        
+      
+      
+      <div class="outroToggle" onclick="outroToggle()"><a id="outroToggle">+ about</a></div>
+      <div id="outro" class="outro">
+        
+        <p>a music tool & solar system sonification by <a href="https://usefulparade.com" target="_blank">Useful Parade</a> and <a href="http://www.desertmagic.org" target="_blank">Desert Magic</a></p>
+        <p>built by <a target="_blank" href="http://lukewilliamsmusic.com">Luke</a> and <a target="_blank" href="http://www.alexwand.com">Alex</a> in may 2020 during the covid quarantine</p>
+        <p>an <a target="_blank" href="https://github.com/usefulparade/dotp-midi">open-source</a> project made with <a href="https://p5js.org" target="_blank">p5js</a> and <a href="https://github.com/djipco/webmidi" target="_blank">webmidijs</a></p>
+        <p>if you'd like to support this  project, consider <a target="_blank" href="https://www.paypal.me/desertmagicmusic">donating</a></p>
+   
+        <p>more at <a target="_blank" href="http://www.danceoftheplanets.com">dotp home</a></p>
+      </div>
+      <!-- <p>~ ~ ~</p> -->
+      <br>
+      
+      
+    </div>
+  </div>
+</body>
+
+</html>
