@@ -4,20 +4,43 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dance of the Planets</title>
+  <title>Anna's Spelling Game</title>
   <script src="webmidi.min.js"></script>
   <script src="p5.min.js"></script>
   <script src="p5.sound.min.js"></script>
-  <script src="sketch.js"></script>
+  <script src="utilities.js"></script>
+  <script src="anna.js"></script>
   
   <link rel="stylesheet" href="style.css">
 
-  <meta property="og:description" content="a solar system sonification by Desert Magic and Luke Williams">
+  <meta property="og:description" content="a spelling game for a young musician">
   <meta property="og:image" content="">
 </head>
 
 <body>
     <div class="container">
         <div class='game' id='game'></div>
+        <div class='inputSection'>
+            <input type="text" id='spellBox' placeholder="type here to loop">
+        </div>
+
+        <div class="controls">
+            <br>
+            <div class="controlsToggle" onclick="controlsToggle()"><a id="controlsToggle">+ controls</a></div>
+
+            <div id="controlsInner" class="controlsInner">
+                <p>scale</p>
+                <select onchange="scaleSelector(this)" id="scaleSelect">
+                    <option value="0">chromatic</option>
+                    <option value="1" selected>diatonic</option>
+                    <option value="2">pentatonic</option>
+                </select>
+                <p class="sliderP" id="speedP">bpm</p>
+                    <input type="range" min="10" max="240" value="60" class="slider" id="bpmSlider" oninput="bpmSliderChange(this)">
+                <button onclick="startLoop()">loop</button>
+                <button onclick="stopLoop()">stop</button>
+
+            </div>
+        </div>
     </div> 
 </body>
