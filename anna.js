@@ -20,10 +20,10 @@ function setup(){
 
     // make envelopes
     loopEnv = new p5.Envelope();
-    loopEnv.setADSR(0.01, 0.01, 0.5, 0.1);
+    loopEnv.setADSR(0.01, 0.01, 0.5, 0.2);
 
     typeEnv = new p5.Envelope();
-    typeEnv.setADSR(0.01, 0.01, 0.5, 1);
+    typeEnv.setADSR(0.01, 0.01, 0.5, 0.2);
 
     // make oscillators
     loopOsc = new p5.TriOsc();
@@ -44,7 +44,7 @@ function setup(){
     wordPart = new p5.Part();
     wordPart.addPhrase(wordPhrase);
     wordPart.setBPM(60);
-    wordPart.noLoop();
+    // wordPart.noLoop();
 }
 
 function draw(){
@@ -71,7 +71,7 @@ function keyTyped(){
 
 function keyPressed(){
     if (keyCode == 13){
-        wordPart.start();
+        // wordPart.start();
     }
 }
 
