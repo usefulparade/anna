@@ -8,8 +8,9 @@
   <script src="webmidi.min.js"></script>
   <script src="p5.min.js"></script>
   <script src="p5.sound.min.js"></script>
+  <script src="p5.speech.js"></script>
   <script src="utilities.js"></script>
-  <script src="anna.js"></script>
+  <script src="sightwords.js"></script>
   
   <link rel="stylesheet" href="style.css">
 
@@ -19,9 +20,13 @@
 
 <body>
     <div class="container">
+        
         <div class='game' id='game'></div>
         <div class='inputSection'>
-            <input type="text" id='spellBox' placeholder="type here to loop">
+            <div class='chatBox'>
+                <input type="text" id='spellBox' placeholder="guess the word">
+                <!-- <button onclick="sendChat()">send</button> -->
+            </div>
         </div>
 
         <div class="controls">
