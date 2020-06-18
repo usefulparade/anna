@@ -18,15 +18,24 @@
   <meta property="og:image" content="">
 </head>
 
-<body>
+<body onload="">
     <div class="container">
         
         <div class='game' id='game'></div>
         <div class='inputSection'>
             <div class='chatBox'>
                 <input type="text" id='spellBox' placeholder="guess the word">
+                
                 <!-- <button onclick="sendChat()">send</button> -->
             </div>
+                <div class='transport'>
+                    <button onclick="startLoop()">loop</button>
+                    <button onclick="playOnce()">play</button>
+                    <button onclick="stopLoop()">stop</button>
+                    <button onclick="speakWord()">hear word</button>
+                    <button onclick="newWord()">new word</button>
+                </div>
+                
         </div>
 
         <div class="controls">
@@ -40,10 +49,19 @@
                     <option value="1" selected>diatonic</option>
                     <option value="2">pentatonic</option>
                 </select>
-                <p class="sliderP" id="speedP">bpm</p>
+
+                <p>level</p>
+                <select onchange="levelSelector(this)" id="levelSelect">
+                    <option value="0">pre-k</option>
+                    <option value="1" selected>kindergarten</option>
+                    <option value="2">1st grade</option>
+                    <option value="2">2nd grade</option>
+                    <option value="2">3rd grade</option>
+                </select>
+                
+                <p class="sliderP" id="speedP">speed</p>
                     <input type="range" min="10" max="240" value="60" class="slider" id="bpmSlider" oninput="bpmSliderChange(this)">
-                <button onclick="startLoop()">loop</button>
-                <button onclick="stopLoop()">stop</button>
+                    
 
             </div>
         </div>

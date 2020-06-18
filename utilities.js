@@ -1,5 +1,7 @@
 var letterArray = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
 
+var sightWordList = ['a', 'and', 'away', 'big', 'blue', 'can', 'come', 'down', 'find', 'for', 'funny', 'go', 'help', 'here', 'in', 'is', 'it', 'jump', 'little', 'look', 'make', 'me', 'my', 'not', 'one', 'play', 'red', 'run', 'said', 'see', 'the', 'three', 'to', 'two', 'up', 'we', 'where', 'yellow', 'you'];
+
 var Scales = function(){
     this.base = [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110];
     this.chromatic = [1];
@@ -20,7 +22,7 @@ function controlsToggle(){
     }
   }
 
-  function scaleSelector(x){
+function scaleSelector(x){
     var newScale = x.value;
     if (newScale == 0){
         currentScale = scales.chromatic;
@@ -30,6 +32,11 @@ function controlsToggle(){
         currentScale = scales.pentatonic;
     }
     console.log(currentScale);
+}
+
+function levelSelector(x){
+    level = x.value;
+    newWord();
 }
 
 function bpmSliderChange(slider){
@@ -104,7 +111,7 @@ function getWordFromBox(){
     // console.log(wordPhrase);
 
     if (pattern.length == 0){
-        wordPart.stop();
+        // wordPart.stop();
     } else {
         // wordPart.start();
     }
@@ -146,47 +153,104 @@ function getShape(a){
 // MUSIC STUFF
 
 function phraseStep(_time, _patternVariable){
-    playNote(_time, _patternVariable, 1);
+    playNote(_time, _patternVariable, oscillators[1], envelopes[1]);
 }
 
 function sightWordStep(_time, _patternVariable){
-    playNote(_time, _patternVariable, 2);
+    playNote(_time, _patternVariable, oscillators[0], envelopes[0]);
 }
 
-function playNote(time, note, oscSelect){
+function playNote(time, note, _osc, _env){
     userStartAudio();
     var thisScale = currentScale;
+
+    // console.log(obj);
     
     var keyCodeNormal = note-65;
     letter = letterArray[keyCodeNormal];
     // TTS.speak(letter);
-    var j = 0;
 
+    var j = 0;
     for (i=0;i<keyCodeNormal;i++){
         j+= thisScale[i%thisScale.length];
     }
 
     var newNote = scales.base[j];
 
-    if (oscSelect == 1){
-        loopOsc.freq(midiToFreq(newNote), glide, time);
-        loopEnv.play(loopOsc, time);
-    } else if (oscSelect == 2) {
-        typeOsc.freq(midiToFreq(newNote), glide, time);
-        typeEnv.play(typeOsc, time);
-    } else {
-        loopOsc.freq(midiToFreq(newNote), glide, time);
-        loopEnv.play(loopOsc, time);
+    if (note != null){
+        _osc.freq(midiToFreq(newNote), glide, time);
+        _env.play(osc, time);
+        // if (oscSelect == 1){
+        //     loopOsc.freq(midiToFreq(newNote), glide, time);
+        //     loopEnv.play(loopOsc, time);
+        // } else if (oscSelect == 2) {
+        //     typeOsc.freq(midiToFreq(newNote), glide, time);
+        //     typeEnv.play(typeOsc, time);
+        // } else {
+        //     loopOsc.freq(midiToFreq(newNote), glide, time);
+        //     loopEnv.play(loopOsc, time);
+        // }
     }
 }
 
 function startLoop(){
+
+    wordPart.metro.metroTicks = 0;
+    sightWords[0].count = 0;
     wordPart.loop();
     wordPart.start();
     // console.log('start');
 }
 
-function stopLoop(){
+function playOnce(){
+
+    wordPart.metro.metroTicks = 0;
+    for (var i in sightWords){
+        sightWords[i].count = 0;
+    }
     wordPart.noLoop();
+    wordPart.start();
+    // console.log('start');
+}
+
+function stopLoop(){
+    wordPart.metro.metroTicks = 0;
+    for (var i in sightWords){
+        sightWords[i].count = 0;
+    }
+    
     wordPart.stop(); 
+}
+
+function speakWord(){
+    TTS.speak(sightWords[0].word);
+}
+
+function newWord(){
+    
+    stopLoop();
+    document.getElementById('spellBox').value = '';
+    getWordFromBox();
+    var randWord = sightWordList.getString(level, int(random(0, sightWordList.getColumnCount()-1)));
+    if (randWord == sightWords[0].word){
+        randWord = sightWordList.getString(level, int(random(0, sightWordList.getColumnCount()-1)));
+    }
+    newSightWord = new SightWord(randWord);
+    
+    // if this isn't the very first word, get rid of the existing one
+
+    if (sightWords.length > 0){
+        wordPart.removePhrase('phrase' + sightWords[0].word);
+        sightWords.pop();
+    }
+
+    sightWords.push(newSightWord);
+
+    playOnce();
+    speakWord();
+    
+    document.getElementById("spellBox").focus();
+    
+    // startLoop();
+
 }
