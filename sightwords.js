@@ -16,6 +16,12 @@ var envelopes = [];
 
 var sightWordOne;
 
+var FFT;
+
+var speechSynth;
+
+var controlsDiv;
+
 // var sightWordList = ['a', 'and', 'away', 'big', 'blue', 'can', 'come', 'down', 'find', 'for', 'funny', 'go', 'help', 'here', 'in', 'is', 'it', 'jump', 'little', 'look', 'make', 'me', 'my', 'not', 'one', 'play', 'red', 'run', 'said', 'see', 'the', 'three', 'to', 'two', 'up', 'we', 'where', 'yellow', 'you'];
 var sightWordList;
 var TTS;
@@ -79,20 +85,31 @@ function setup(){
     
     wordPart = new p5.Part();
     // wordPart.addPhrase(wordPhrase);
-    wordPart.setBPM(60);
+    wordPart.setBPM(45);
     wordPart.noLoop();
-    wordPart.start();
-    console.log(wordPart);
+    // wordPart.start();
+    // console.log(wordPart);
+
+    // text to speech!
 
     TTS = new p5.Speech();
     TTS.interrupt = true;
     TTS.setRate(1);
+    TTS.setVoice('Victoria');
+    
+    controlsDiv = document.getElementById('controlsInner');
+    speechSynth = window.speechSynthesis;
+    makeVoiceList();
+
+    fft = new p5.FFT();
+    
 
     //load the sight word
 
     level = 1;
 
     var randWord = sightWordList.getString(level, int(random(0, sightWordList.getColumnCount()-1)));
+    // var alphabet = 'abcdefg';
     sightWordOne = new SightWord(randWord);
     sightWords.push(sightWordOne);
     speakWord();
@@ -110,6 +127,7 @@ function draw(){
         sightWords[i].layer = i;
         // console.log(sightWords[i].layer)
     }
+
 }
 
 function windowResized(){
@@ -133,6 +151,7 @@ function keyTyped(){
 
     if (keyCode >= 65 && keyCode <= 90){
         playNote(0, keyCode, oscillators[0], envelopes[0]);
+        speakLetter(letter);
     }
 
     
@@ -149,7 +168,7 @@ function keyPressed(){
             newWord();
         } else {
             speakWord();
-            playOnce();
+            startLoop();
         }
     }
 }
@@ -188,6 +207,7 @@ var SightWord = function(_word){
     this.osc.amp(this.env);
     this.osc.freq(440);
     this.osc.start();
+    this.firstTime = true;
 
     this.show = function(){
 
@@ -224,10 +244,13 @@ var SightWord = function(_word){
     };
 
     this.step = function(_time, _patternVariable){
-        
+        if (this.obj.word == word){
+            speakLetter(this.obj.letterShapeArray[this.obj.count].letter);
+        }
         this.obj.letterShapeArray[this.obj.count].flash();
         playNote(_time, _patternVariable, this.obj.osc, this.obj.env);
         this.obj.count = (this.obj.count+1)%this.obj.wordLength;
+        
 
     };
 

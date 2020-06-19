@@ -70,7 +70,9 @@
       this.onEnd; // ...and ends.
   
       this.voices = []; // array of available voices (dependent on browser/OS)
-  
+      if (window.speechSynthesis.onvoiceschanged == undefined){
+        this.voices = window.speechSynthesis.getVoices();
+      }
       // first parameter of constructor is an initial voice selector
       this.initvoice;
       if(_dv !== undefined) this.initvoice=_dv;

@@ -1,6 +1,7 @@
 var letterArray = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
 
 var sightWordList = ['a', 'and', 'away', 'big', 'blue', 'can', 'come', 'down', 'find', 'for', 'funny', 'go', 'help', 'here', 'in', 'is', 'it', 'jump', 'little', 'look', 'make', 'me', 'my', 'not', 'one', 'play', 'red', 'run', 'said', 'see', 'the', 'three', 'to', 'two', 'up', 'we', 'where', 'yellow', 'you'];
+var voiceArray, voiceSelector, voiceVal;
 
 var Scales = function(){
     this.base = [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110];
@@ -223,7 +224,17 @@ function stopLoop(){
 }
 
 function speakWord(){
+    TTS.setVolume(1);
+    TTS.setPitch(1);
+    TTS.setRate(1.5);
     TTS.speak(sightWords[0].word);
+}
+
+function speakLetter(_letter){
+    TTS.setVolume(0.5);
+    TTS.setPitch(map((getKeyCodes(_letter)), 0, 25, 0, 2));
+    TTS.setRate(2);
+    TTS.speak(_letter);
 }
 
 function newWord(){
@@ -246,11 +257,38 @@ function newWord(){
 
     sightWords.push(newSightWord);
 
-    playOnce();
+    // playOnce();
+    startLoop();
     speakWord();
     
     document.getElementById("spellBox").focus();
     
     // startLoop();
 
+}
+
+function makeVoiceList(){
+    voiceArray = TTS.voices;
+    // console.log(voiceArray);
+
+    var voiceP = createP('voice');
+    voiceSelector = createSelect();
+    voiceSelector.changed(voiceSelectorChanged);
+
+    for (i=0;i<voiceArray.length;i++){
+        // console.log(voiceArray[i].name);
+        if (voiceArray[i].lang == 'en-US'){
+        // voiceSelector.option('' + voiceArray[i].name + ' ' + voiceArray[i].lang);
+            voiceSelector.option('' + voiceArray[i].name);
+        }
+    }
+    voiceP.parent(controlsDiv);
+    voiceSelector.parent(controlsDiv);
+}
+
+function voiceSelectorChanged(){
+    
+    var newVoice = voiceSelector.value();
+    // console.log('new voice: ' + newVoice);
+    TTS.setVoice(newVoice);
 }
