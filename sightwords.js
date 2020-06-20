@@ -22,6 +22,8 @@ var speechSynth;
 
 var controlsDiv;
 
+var voiceArray, voiceSelector, voiceVal, voiceCheckboxOne;
+
 // var sightWordList = ['a', 'and', 'away', 'big', 'blue', 'can', 'come', 'down', 'find', 'for', 'funny', 'go', 'help', 'here', 'in', 'is', 'it', 'jump', 'little', 'look', 'make', 'me', 'my', 'not', 'one', 'play', 'red', 'run', 'said', 'see', 'the', 'three', 'to', 'two', 'up', 'we', 'where', 'yellow', 'you'];
 var sightWordList;
 var TTS;
@@ -95,11 +97,27 @@ function setup(){
     TTS = new p5.Speech();
     TTS.interrupt = true;
     TTS.setRate(1);
-    TTS.setVoice('Victoria');
+    // TTS.setVoice('Fred');
     
     controlsDiv = document.getElementById('controlsInner');
     speechSynth = window.speechSynthesis;
+
+    var voiceP = createP('voice');
+    voiceSelector = createSelect();
+    voiceSelector.changed(voiceSelectorChanged);
+    voiceP.parent(controlsDiv);
+    voiceSelector.parent(controlsDiv);
+    voiceCheckboxOne = createCheckbox(' say letters', true);
+    voiceCheckboxOne.parent(controlsDiv);
+    voiceCheckboxOne.checked('true');
+
     makeVoiceList();
+
+    TTS.setVoice('Fred');
+    if (speechSynth.onvoiceschanged !== undefined){
+        TTS.onLoad = makeVoiceList;
+        TTS.setVoice('Fred');
+    }
 
     fft = new p5.FFT();
     
@@ -109,12 +127,13 @@ function setup(){
     level = 1;
 
     var randWord = sightWordList.getString(level, int(random(0, sightWordList.getColumnCount()-1)));
-    // var alphabet = 'abcdefg';
-    sightWordOne = new SightWord(randWord);
+    var alphabet = 'abcdefghijklmnopqrstuvwxyz';
+    sightWordOne = new SightWord(alphabet);
     sightWords.push(sightWordOne);
-    speakWord();
+    // speakWord();
 
     document.getElementById("spellBox").focus();
+    document.getElementById("spellBox").placeholder = 'to start, type the alphabet!';
 
 }
 
@@ -124,8 +143,6 @@ function draw(){
 
     for (i=0;i<sightWords.length;i++){
         sightWords[i].show();
-        sightWords[i].layer = i;
-        // console.log(sightWords[i].layer)
     }
 
 }
@@ -135,11 +152,23 @@ function windowResized(){
 
     for (var i in sightWords){
         sightWords[i].pos = new p5.Vector(width/2, height/3);
-        sightWords[i].spacing = width/12;
-        sightWords[i].halves = sightWords[i].spacing*(sightWords[i].length*0.5);
-        for (var j in sightWords[i].letterShapeArray){
-            sightWords[i].letterShapeArray[j].size = random(width/8, width/6);
+        
+        if (sightWords[i].length <= 11){
+            sightWords[i].spacing = width/12;
+            for (var j in sightWords[i].letterShapeArray){
+                sightWords[i].letterShapeArray[j].size = random(width/8, width/6);
+            }
+        } else {
+            sightWords[i].spacing = width/(sightWords[i].length+2);
+            for (var k in sightWords[i].letterShapeArray){
+                sightWords[i].letterShapeArray[k].size = random(width/(sightWords[i].length-3), width/(sightWords[i].length-5));
+            }
         }
+
+        sightWords[i].strokeWeight = map(width, 300, 1400, 1, 5);
+        sightWords[i].halves = sightWords[i].spacing*(sightWords[i].length*0.5);
+        
+        
     }
 }
 
@@ -188,6 +217,7 @@ var SightWord = function(_word){
     this.wordLength = this.letterArray.length;
     this.count = 0;
     this.letterShapeArray = [];
+    this.strokeWeight = map(width, 300, 1400, 1, 5);
 
     for (i=0;i<this.letterArray.length;i++){
         this.letterShapeArray[i] = new LetterShape(this.letterArray[i]);
@@ -195,7 +225,16 @@ var SightWord = function(_word){
 
     this.length = this.letterArray.length;
     wordPart.length = this.length;
-    this.spacing = width/12;
+
+
+    if (this.length <= 11){
+        this.spacing = width/12;
+    } else {
+        this.spacing = width/(this.length+2);
+        for (var j in this.letterShapeArray){
+            this.letterShapeArray[j].size = random(width/(this.length-3), width/(this.length-5));
+        }
+    }
     this.halves = this.spacing*(this.length*0.5);
 
     this.layer = 0;
@@ -203,7 +242,7 @@ var SightWord = function(_word){
     this.env = new p5.Envelope();
     this.env.setADSR(0.01, 0.01, 0.5, 0.1);
 
-    this.osc = new p5.SinOsc();
+    this.osc = new p5.TriOsc();
     this.osc.amp(this.env);
     this.osc.freq(440);
     this.osc.start();
@@ -227,17 +266,24 @@ var SightWord = function(_word){
         push();
         translate(this.pos);
         for(j=0;j<this.letterShapeArray.length;j++){
+
             this.letterShapeArray[j].pos = new p5.Vector(map(j, 0, this.letterShapeArray.length-1, -(this.halves), (this.halves)), 
                                                         map(this.letterShapeArray[j].index, 0, 25, height/4, -height/4));
+
             if (j>0){
             push();
                 stroke(0);
-                strokeWeight(width/120);
+                strokeWeight(this.strokeWeight);
                 line(this.letterShapeArray[j-1].pos.x, this.letterShapeArray[j-1].pos.y, this.letterShapeArray[j].pos.x, this.letterShapeArray[j].pos.y);
             pop();
             }
 
             this.letterShapeArray[j].show();
+
+            if (this.word == word){
+                wordPart.loop();
+                wordPart.start();
+            }
         }
 
         pop();
@@ -295,7 +341,7 @@ var LetterShape = function(_letter){
             }
             //flash effect
 
-            textSize(width/12);
+            textSize(this.size*0.8);
             textAlign(CENTER, CENTER);
             fill(255);
             if (this.correct){

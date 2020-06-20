@@ -24,16 +24,16 @@
         <div class='game' id='game'></div>
         <div class='inputSection'>
             <div class='chatBox'>
-                <input type="text" id='spellBox' placeholder="guess the word">
+                <input type="text" id='spellBox' placeholder="to start, type the alphabet!">
                 
                 <!-- <button onclick="sendChat()">send</button> -->
             </div>
                 <div class='transport'>
-                    <button onclick="startLoop()">loop</button>
-                    <button onclick="playOnce()">play</button>
-                    <button onclick="stopLoop()">stop</button>
-                    <button onclick="speakWord()">hear word</button>
-                    <button onclick="newWord()">new word</button>
+                    <button onclick="startLoop()">🔄</button>
+                    <!-- <button onclick="playOnce()">play</button> -->
+                    <button onclick="stopLoop()">⏹</button>
+                    <button onclick="speakWord()">🆓</button>
+                    <button onclick="newWord()">🆗</button>
                 </div>
                 
         </div>
@@ -61,7 +61,6 @@
                 
                 <p class="sliderP" id="speedP">speed</p>
                     <input type="range" min="10" max="240" value="30" class="slider" id="bpmSlider" oninput="bpmSliderChange(this)">
-                    
 
             </div>
         </div>

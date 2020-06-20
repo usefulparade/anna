@@ -167,12 +167,12 @@ input[type="checkbox"]
     appearance: none;
     display: inline-block;
     position: relative;
-    background-color: black;
-    color: white;
+    background-color: white;
+    color: black;
     top: 5px;
     height: 15px;
     width: 15px;
-    border: 0;
+    border: 1px solid black;
     border-radius: 1px;
     cursor: pointer;
     outline: none;
@@ -182,7 +182,8 @@ input[type="checkbox"]:checked::before
 {
     position: absolute;
     font-family: 'Courier New', Courier, monospace;
-    left: 4px;
+    left: 2px;
+    bottom: 0.1px;
     font-weight: bold;
     content: '\02143';
     transform: rotate(40deg);
@@ -190,7 +191,6 @@ input[type="checkbox"]:checked::before
 
 input[type="checkbox"]:hover
 {
-    background-color: black;
 }
 
 input[type="checkbox"]:checked
@@ -209,6 +209,7 @@ input[type="text"]
   text-align: center;
   margin-left: auto;
   margin-right: auto;
+  outline: none;
 }
 
 .inputSection {
@@ -254,8 +255,20 @@ input[type="text"]
 .inputSection button{
   display: inline-block;
   position: relative;
-  width: 100px;
-  height: auto;
+  width: 40px;
+  height: 40px;
+  border: 2px solid black;
+  color: black;
+  background: white;
+  font-size: 1.5em;
+}
+
+.inputSection button:hover{
+  background: lightgrey;
+}
+
+.inputSection button:active{
+  background: black;
 }
 
 .chatText {
@@ -464,12 +477,19 @@ select option {
     /* width: 100%; */
   }
 
-  .inputSection .chatBox {
+  .inputSection {
+    bottom: 0px;
+  }
 
+  .inputSection .chatBox {
     width: 90%;
+    font-size: 0.5em;
   }
   .inputSection .transport {
-
     width: 90%;
+  }
+  .inputSection button {
+    /* width: 20%; */
+    /* font-size: 0.8em; */
   }
 }
