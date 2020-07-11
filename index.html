@@ -32,8 +32,8 @@
                     <button onclick="startLoop()">🔄</button>
                     <!-- <button onclick="playOnce()">play</button> -->
                     <button onclick="stopLoop()">⏹</button>
-                    <button onclick="speakWord()">🆓</button>
-                    <button onclick="newWord()">🆗</button>
+                    <button onclick="thirdButton()">🆓</button>
+                    <button onclick="advance()">🆗</button>
                 </div>
                 
         </div>
@@ -43,25 +43,36 @@
             <div class="controlsToggle" onclick="controlsToggle()"><a id="controlsToggle">+ controls</a></div>
 
             <div id="controlsInner" class="controlsInner">
+                <p>mode</p>
+                <select onchange="modeSelector(this)" id="modeSelect">
+                    <option value="0" selected>sandbox</option>
+                    <option value="1">sight words</option>
+                </select>
+
                 <p>scale</p>
                 <select onchange="scaleSelector(this)" id="scaleSelect">
                     <option value="0">chromatic</option>
                     <option value="1" selected>diatonic</option>
                     <option value="2">pentatonic</option>
                 </select>
-
-                <p>level</p>
-                <select onchange="levelSelector(this)" id="levelSelect">
-                    <option value="0">pre-k</option>
-                    <option value="1" selected>kindergarten</option>
-                    <option value="2">1st grade</option>
-                    <option value="2">2nd grade</option>
-                    <option value="2">3rd grade</option>
-                </select>
+                <div id="level">
+                    <p>level</p>
+                    <select onchange="levelSelector(this)" id="levelSelect">
+                        <option value="0">pre-k</option>
+                        <option value="1" selected>kindergarten</option>
+                        <option value="2">1st grade</option>
+                        <option value="2">2nd grade</option>
+                        <option value="2">3rd grade</option>
+                    </select>
+                </div>
                 
                 <p class="sliderP" id="speedP">speed</p>
                     <input type="range" min="10" max="240" value="30" class="slider" id="bpmSlider" oninput="bpmSliderChange(this)">
+                
+                    <p class="sliderP" id="transposeP">transpose</p>
+                    <input type="range" min="0" max="24" value="12" class="slider" id="transposeSlider" oninput="transposeSliderChange(this)">
 
+                
             </div>
         </div>
     </div> 

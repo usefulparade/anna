@@ -2,9 +2,10 @@ var letterArray = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','
 
 var sightWordList = ['a', 'and', 'away', 'big', 'blue', 'can', 'come', 'down', 'find', 'for', 'funny', 'go', 'help', 'here', 'in', 'is', 'it', 'jump', 'little', 'look', 'make', 'me', 'my', 'not', 'one', 'play', 'red', 'run', 'said', 'see', 'the', 'three', 'to', 'two', 'up', 'we', 'where', 'yellow', 'you'];
 
-
+var prompts = ['write a poem?', 'write anything!', 'how are you?', ''];
 var Scales = function(){
     this.base = [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110];
+    this.baseA440 = [33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110];
     this.chromatic = [1];
     // this.diatonic = [2, 2, 1, 2, 2, 2, 1];
     this.diatonic = [2, 1, 2, 2, 1, 2, 2,];
@@ -231,40 +232,74 @@ function speakWord(){
 }
 
 function speakLetter(_letter){
-    TTS.setVolume(0.5);
-    TTS.setPitch(map((getKeyCodes(_letter)), 0, 25, 0, 2));
-    TTS.setRate(2);
-    if (voiceCheckboxOne.checked()){
-        TTS.speak(_letter);
+
+        TTS.setVolume(0.5);
+        TTS.setPitch(map((getKeyCodes(_letter)), 0, 25, 0, 2));
+        TTS.setRate(2);
+        if (voiceCheckboxOne.checked()){
+            TTS.speak(_letter);
+        }
+
+
+
+}
+
+function thirdButton(){
+    if (mode==1){
+        speakWord();
+    } else if (mode==0){
+        stopLoop();
+        clearAllSightWords();
     }
 }
 
-function newWord(){
-    
+function clearAllSightWords(){
     stopLoop();
-    document.getElementById('spellBox').value = '';
-    getWordFromBox();
-    var randWord = sightWordList.getString(level, int(random(0, sightWordList.getColumnCount()-1)));
-    if (randWord == sightWords[0].word){
-        randWord = sightWordList.getString(level, int(random(0, sightWordList.getColumnCount()-1)));
-    }
-    newSightWord = new SightWord(randWord);
-    
-    // if this isn't the very first word, get rid of the existing one
-
-    if (sightWords.length > 0){
-        wordPart.removePhrase('phrase' + sightWords[0].word);
+    while (sightWords.length > 0){
+        wordPart.removePhrase('phrase' + sightWords[sightWords.length-1].word);
         sightWords.pop();
     }
+}
 
-    sightWords.push(newSightWord);
-
-    // playOnce();
-    startLoop();
-    speakWord();
+function advance(){
     
-    document.getElementById("spellBox").focus();
-    document.getElementById("spellBox").placeholder = "type the word";
+    if (mode == 1){
+        stopLoop();
+        document.getElementById('spellBox').value = '';
+        getWordFromBox();
+        var randWord = sightWordList.getString(level, int(random(0, sightWordList.getColumnCount()-1)));
+        if (randWord == sightWords[0].word){
+            randWord = sightWordList.getString(level, int(random(0, sightWordList.getColumnCount()-1)));
+        }
+        newSightWord = new SightWord(randWord);
+        
+        // if this isn't the very first word, get rid of the existing one
+
+        if (sightWords.length > 0){
+            wordPart.removePhrase('phrase' + sightWords[0].word);
+            sightWords.pop();
+        }
+
+        sightWords.push(newSightWord);
+
+        // playOnce();
+        startLoop();
+        speakWord();
+
+    } else if (mode == 0){
+    if (document.getElementById('spellBox').value.length != 0){
+        var newSandboxWord = new SightWord(document.getElementById('spellBox').value);
+            sightWords.push(newSandboxWord);
+            document.getElementById('spellBox').value = '';
+            for (var i in sightWords){
+                sightWords[i].verticalOffset = new p5.Vector(0, map(i, 0, sightWords.length-1, -width/6, width/4));
+            }
+            startLoop();
+        }
+        
+        document.getElementById("spellBox").focus();
+        document.getElementById("spellBox").placeholder = "type a poem!";
+    }
     // startLoop();
 
 }
@@ -292,4 +327,44 @@ function voiceSelectorChanged(){
     var newVoice = voiceSelector.value();
     // console.log('new voice: ' + newVoice);
     TTS.setVoice(newVoice);
+}
+
+function modeSelector(_sel){
+    mode = _sel.value;
+    if (mode == 0){
+        setupSandboxMode();
+    } else if (mode == 1){
+        setupSightWordsMode();
+    }
+}
+
+function setupSandboxMode(){
+    clearAllSightWords();
+    document.getElementById("spellBox").focus();
+    document.getElementById("spellBox").placeholder = 'write a poem!';
+    wordPart.setBPM(80);
+    document.getElementById('level').style = 'display: none';
+    document.getElementById('bpmSlider').value = 80;
+}
+
+function setupSightWordsMode(){
+    clearAllSightWords();
+    var randWord = sightWordList.getString(level, int(random(0, sightWordList.getColumnCount()-1)));
+    var alphabet = 'abcdefghijklmnopqrstuvwxyz';
+    sightWordOne = new SightWord(alphabet);
+    sightWords.push(sightWordOne);
+    wordPart.setBPM(45);
+    document.getElementById('bpmSlider').value = 45;
+
+    document.getElementById('level').style = 'display: block;';
+    document.getElementById("spellBox").focus();
+    document.getElementById("spellBox").placeholder = 'to start, type the alphabet!';
+}
+
+function transposeSliderChange(_slider){
+    
+    for (var i in scales.base){
+        // scales.base[i] = scales.baseA440[i];
+        scales.base[i] = scales.baseA440[i] + (_slider.value - 12);
+    }
 }

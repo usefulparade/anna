@@ -449,6 +449,10 @@ select option {
     width: 320px;
   }
 
+  .level {
+    width: 100%;
+  }
+
   .outro, .midiOptions {
     width: 200px;
     

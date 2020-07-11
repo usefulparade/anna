@@ -24,6 +24,8 @@ var controlsDiv;
 
 var voiceArray, voiceSelector, voiceVal, voiceCheckboxOne;
 
+var mode;
+
 // var sightWordList = ['a', 'and', 'away', 'big', 'blue', 'can', 'come', 'down', 'find', 'for', 'funny', 'go', 'help', 'here', 'in', 'is', 'it', 'jump', 'little', 'look', 'make', 'me', 'my', 'not', 'one', 'play', 'red', 'run', 'said', 'see', 'the', 'three', 'to', 'two', 'up', 'we', 'where', 'yellow', 'you'];
 var sightWordList;
 var TTS;
@@ -38,6 +40,8 @@ function setup(){
     c = createCanvas(windowWidth, windowHeight);
     cParent = document.getElementById('game');
     c.parent(cParent);
+
+    mode = 0;
     
     letter = '';
     word = '';
@@ -126,14 +130,12 @@ function setup(){
 
     level = 1;
 
-    var randWord = sightWordList.getString(level, int(random(0, sightWordList.getColumnCount()-1)));
-    var alphabet = 'abcdefghijklmnopqrstuvwxyz';
-    sightWordOne = new SightWord(alphabet);
-    sightWords.push(sightWordOne);
-    // speakWord();
-
-    document.getElementById("spellBox").focus();
-    document.getElementById("spellBox").placeholder = 'to start, type the alphabet!';
+    if (mode == 1){
+        setupSightWordsMode(); 
+    } else if (mode == 0){
+        setupSandboxMode();
+    }
+    
 
 }
 
@@ -190,14 +192,29 @@ function keyPressed(){
 
     // if ENTER/RETURN
 
+    //keycode for 'enter' or 'return'
     if (keyCode == 13){
 
-        if (word == sightWords[0].word){
-            document.getElementById('spellBox').value = '';
-            newWord();
-        } else {
-            speakWord();
-            startLoop();
+        // if the game mode is 'sight words' (1)
+        if (mode == 1){
+            if (word == sightWords[0].word){
+                document.getElementById('spellBox').value = '';
+                advance();
+            } else {
+                speakWord();
+                startLoop();
+            }
+        // if the game mode is 'sandbox' (0)
+        } else if (mode == 0){
+            if (document.getElementById('spellBox').value.length != 0){
+                var newSandboxWord = new SightWord(document.getElementById('spellBox').value);
+                sightWords.push(newSandboxWord);
+                document.getElementById('spellBox').value = '';
+                for (var i in sightWords){
+                    sightWords[i].verticalOffset = new p5.Vector(0, map(i, 0, sightWords.length-1, -width/8, width/6));
+                }
+                startLoop();
+            }
         }
     }
 }
@@ -218,6 +235,7 @@ var SightWord = function(_word){
     this.count = 0;
     this.letterShapeArray = [];
     this.strokeWeight = map(width, 300, 1400, 1, 5);
+    this.verticalOffset = new p5.Vector(0, 0);
 
     for (i=0;i<this.letterArray.length;i++){
         this.letterShapeArray[i] = new LetterShape(this.letterArray[i]);
@@ -252,23 +270,37 @@ var SightWord = function(_word){
 
         for (var i in this.letterShapeArray){
 
-            if (this.letterShapeArray[i].letter == letters[i]){
+            // in Sight Words mode, hide letters until they match the letters in the typing box
+            if (mode == 1){
+                if (this.letterShapeArray[i].letter == letters[i]){
+                    this.letterShapeArray[i].saturation = 200;
+                    this.letterShapeArray[i].brightness = 200;
+                    this.letterShapeArray[i].correct = true;
+                } else {
+                    this.letterShapeArray[i].saturation = 0;
+                    this.letterShapeArray[i].brightness = 0;
+                    this.letterShapeArray[i].correct = false;
+                }
+            // otherwise, always show letters
+            } else if (mode == 0) {
                 this.letterShapeArray[i].saturation = 200;
                 this.letterShapeArray[i].brightness = 200;
                 this.letterShapeArray[i].correct = true;
-            } else {
-                this.letterShapeArray[i].saturation = 0;
-                this.letterShapeArray[i].brightness = 0;
-                this.letterShapeArray[i].correct = false;
+
+                if (getKeyCodes(this.letterShapeArray[i].letter) < 0){
+                
+                    this.letterShapeArray[i].brightness = 0;
+                }
             }
         }
 
         push();
         translate(this.pos);
+        translate(this.verticalOffset);
         for(j=0;j<this.letterShapeArray.length;j++){
 
             this.letterShapeArray[j].pos = new p5.Vector(map(j, 0, this.letterShapeArray.length-1, -(this.halves), (this.halves)), 
-                                                        map(this.letterShapeArray[j].index, 0, 25, height/4, -height/4));
+                                                        map(this.letterShapeArray[j].index, 0, 25, (height/4)/sightWords.length, (-height/4)/sightWords.length));
 
             if (j>0){
             push();
@@ -280,9 +312,12 @@ var SightWord = function(_word){
 
             this.letterShapeArray[j].show();
 
-            if (this.word == word){
-                wordPart.loop();
-                wordPart.start();
+            // in Sight Words mode
+            if (mode == 1){
+                if (this.word == word){
+                    wordPart.loop();
+                    wordPart.start();
+                }
             }
         }
 
@@ -290,12 +325,20 @@ var SightWord = function(_word){
     };
 
     this.step = function(_time, _patternVariable){
+        //if this letter is a space, skip it
+        while (this.obj.letterShapeArray[this.obj.count].letter == ' '){
+            this.obj.count = (this.obj.count+1)%this.obj.wordLength;
+        }
+
         if (this.obj.word == word){
             speakLetter(this.obj.letterShapeArray[this.obj.count].letter);
         }
         this.obj.letterShapeArray[this.obj.count].flash();
         playNote(_time, _patternVariable, this.obj.osc, this.obj.env);
+        
+        //advance to the next letter
         this.obj.count = (this.obj.count+1)%this.obj.wordLength;
+        
         
 
     };
