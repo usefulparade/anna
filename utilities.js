@@ -97,10 +97,10 @@ function getWordFromBox(){
     letters = word.split('');
 
     for (i=0;i<letters.length;i++){
-        if (getKeyCodes(letters[i]) == -1){
+        if (getKeyCodes(letters[i].toLowerCase()) == -1){
             pattern[i] = 0;
         } else {
-            pattern[i] = getKeyCodes(letters[i])+65;
+            pattern[i] = getKeyCodes(letters[i].toLowerCase())+65;
         }
         
     }
@@ -127,10 +127,10 @@ function makePatternFromWord(_word){
     var pattern = [];
 
     for (i=0;i<letters.length;i++){
-        if (getKeyCodes(letters[i]) == -1){
+        if (getKeyCodes(letters[i].toLowerCase()) == -1){
             pattern[i] = 0;
         } else {
-            pattern[i] = getKeyCodes(letters[i])+65;
+            pattern[i] = getKeyCodes(letters[i].toLowerCase())+65;
         }
         
     }
@@ -145,6 +145,8 @@ function makePatternFromWord(_word){
 function getShape(a){
     if (a == 'a' || a == 'e' ||  a == 'i' || a == 'o' || a == 'u' || a == 'y'){
         return 0;
+    } else if (a == '.' || a == ' ' || a == ',' || a == '?' || a == '!'){
+        return 2;
     } else {
         return 1;
     }

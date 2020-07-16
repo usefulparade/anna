@@ -287,8 +287,8 @@ var SightWord = function(_word){
                 this.letterShapeArray[i].brightness = 200;
                 this.letterShapeArray[i].correct = true;
 
-                if (getKeyCodes(this.letterShapeArray[i].letter) < 0){
-                
+                if (getKeyCodes(this.letterShapeArray[i].letter.toLowerCase()) < 0){
+                    
                     this.letterShapeArray[i].brightness = 0;
                 }
             }
@@ -310,6 +310,8 @@ var SightWord = function(_word){
             pop();
             }
 
+            this.secrets(j);
+
             this.letterShapeArray[j].show();
 
             // in Sight Words mode
@@ -326,6 +328,7 @@ var SightWord = function(_word){
 
     this.step = function(_time, _patternVariable){
         //if this letter is a space, skip it
+        // var thisLetter = this.obj.letterShapeArray[this.obj.count].letter;
         while (this.obj.letterShapeArray[this.obj.count].letter == ' '){
             this.obj.count = (this.obj.count+1)%this.obj.wordLength;
         }
@@ -343,6 +346,19 @@ var SightWord = function(_word){
 
     };
 
+    this.secrets = function(_ind){
+        if (this.word.toLowerCase() == 'spin'){
+            this.letterShapeArray[_ind].rot += QUARTER_PI*0.01;
+        }
+
+        if (this.word.toLowerCase() == 'anna'){
+            this.letterShapeArray[_ind].hue = (this.letterShapeArray[_ind].hue + int(random(0, 5))) % 255;
+        }
+        if (this.word.toLowerCase() == 'chip'){
+            this.letterShapeArray[_ind].hue = (this.letterShapeArray[_ind].hue + 3) % 255;
+        }
+    };
+
     this.pattern = makePatternFromWord(this.word);
     this.phrase = new p5.Phrase('phrase' + this.word, this.step, this.pattern);
     this.phrase.obj = this;
@@ -355,8 +371,11 @@ var LetterShape = function(_letter){
     this.size = random(width/8, width/6);
     this.rot = random(-(PI/12), PI/12);
     this.letter = _letter;
-    this.shape = getShape(this.letter);
-    this.index = getKeyCodes(this.letter);
+    this.shape = getShape(this.letter.toLowerCase());
+    if (this.shape == 2){
+        this.rot = random(QUARTER_PI*0.9, QUARTER_PI*1.1);
+    }
+    this.index = getKeyCodes(this.letter.toLowerCase());
     this.hue = map(this.index, 0, 25, 0, 255);
     this.saturation = 0;
     this.brightness = 0;
@@ -374,13 +393,15 @@ var LetterShape = function(_letter){
             // main shape
             if (this.shape == 0){
                 ellipse(0, 0, this.size);
-            } else {
+            } else if (this.shape == 1){
                 beginShape();
                 
                     vertex(0, -this.size/2);
                     vertex(this.size/2, this.size/3);
                     vertex(-this.size/2, this.size/3);
                 endShape(CLOSE);
+            } else {
+                rect(0, 0, this.size*0.3);
             }
             //flash effect
 
