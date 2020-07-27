@@ -1,5 +1,6 @@
 var letterArray = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
 
+var punctuationArray = ['.', ',', '!', '?', ':', ';', '-', '+', "'", '"', '/'];
 var sightWordList = ['a', 'and', 'away', 'big', 'blue', 'can', 'come', 'down', 'find', 'for', 'funny', 'go', 'help', 'here', 'in', 'is', 'it', 'jump', 'little', 'look', 'make', 'me', 'my', 'not', 'one', 'play', 'red', 'run', 'said', 'see', 'the', 'three', 'to', 'two', 'up', 'we', 'where', 'yellow', 'you'];
 
 var prompts = ['write a poem?', 'write anything!', 'how are you?', ''];
@@ -128,7 +129,12 @@ function makePatternFromWord(_word){
 
     for (i=0;i<letters.length;i++){
         if (getKeyCodes(letters[i].toLowerCase()) == -1){
-            pattern[i] = 0;
+            // pattern[i] = 0;
+            if (punctuationArray.includes(letters[i])){
+                pattern[i] = letters[i];
+            } else {
+                pattern[i] = 0;
+            }
         } else {
             pattern[i] = getKeyCodes(letters[i].toLowerCase())+65;
         }
@@ -138,6 +144,7 @@ function makePatternFromWord(_word){
     while (pattern.length > letters.length){
         pattern.pop();
     }
+    console.log(pattern);
 
     return(pattern);
 }
@@ -168,6 +175,7 @@ function playNote(time, note, _osc, _env){
     userStartAudio();
     var thisScale = currentScale;
 
+    // console.log(note);
     // console.log(obj);
     
     var keyCodeNormal = note-65;
@@ -181,7 +189,11 @@ function playNote(time, note, _osc, _env){
 
     var newNote = scales.base[j];
 
-    if (note != null){
+    if (punctuationArray.includes(note)){
+        var drum = punctuationArray.indexOf(note);
+        // drumSamples[drum].rate(random(0.9, 1.1));
+        drumSamples[drum].play();
+    } else if (note != null){
         _osc.freq(midiToFreq(newNote), glide, time);
         _env.play(osc, time);
         // if (oscSelect == 1){

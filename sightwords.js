@@ -32,8 +32,26 @@ var TTS;
 
 var level;
 
+var drumSamples = [];
+
 function preload(){
     sightWordList = loadTable('sightWords.csv', 'csv');
+    drumSamples[0] = loadSound('samples/linndrum/kick_hrd.mp3');
+    drumSamples[1] = loadSound('samples/linndrum/snare_mid.mp3');
+    drumSamples[2] = loadSound('samples/linndrum/clap.mp3');
+    drumSamples[3] = loadSound('samples/linndrum/sidestick.mp3');
+    drumSamples[4] = loadSound('samples/linndrum/hat_close.mp3');
+    drumSamples[5] = loadSound('samples/linndrum/hat_open.mp3');
+    drumSamples[6] = loadSound('samples/linndrum/tambo_sft.mp3');
+    drumSamples[7] = loadSound('samples/linndrum/cabasa_hrd.mp3');
+    drumSamples[8] = loadSound('samples/linndrum/conga_hi.mp3');
+    drumSamples[9] = loadSound('samples/linndrum/conga_lo.mp3');
+    drumSamples[10] = loadSound('samples/linndrum/cowbell.mp3');
+    drumSamples[11] = loadSound('samples/linndrum/crash.mp3');
+    drumSamples[12] = loadSound('samples/linndrum/ride_sft.mp3');
+    drumSamples[13] = loadSound('samples/linndrum/tom_a.mp3');
+    drumSamples[14] = loadSound('samples/linndrum/tom_b.mp3');
+    drumSamples[15] = loadSound('samples/linndrum/tom_c.mp3');
 }
 
 function setup(){
@@ -124,6 +142,10 @@ function setup(){
     }
 
     fft = new p5.FFT();
+
+    for (k=0;k<drumSamples.length;k++){
+        drumSamples[k].playMode('sustain');
+    }
     
 
     //load the sight word
@@ -183,7 +205,14 @@ function keyTyped(){
     if (keyCode >= 65 && keyCode <= 90){
         playNote(0, keyCode, oscillators[0], envelopes[0]);
         speakLetter(letter);
+    } else {
+        if (punctuationArray.includes(key)){
+            playNote(0, key, oscillators[0], envelopes[0]);
+        }
     }
+    // if (key == "."){
+    //     drumSamples[int(random(0, 5))].play();
+    // }
 
     
 }
@@ -336,6 +365,7 @@ var SightWord = function(_word){
         if (this.obj.word == word){
             speakLetter(this.obj.letterShapeArray[this.obj.count].letter);
         }
+
         this.obj.letterShapeArray[this.obj.count].flash();
         playNote(_time, _patternVariable, this.obj.osc, this.obj.env);
         
